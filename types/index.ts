@@ -27,7 +27,11 @@ export interface Cart {
 
 export type CartItemEvent = 'ITEM_QUANTITY_UPDATED' | 'ITEM_OUT_OF_STOCK'
 
+export type Mutation = 'addItem' | 'removeItem' | 'updateItemQuantity'
+
 export interface CartItemMessage {
   event: CartItemEvent
   payload: CartItem
 }
+
+export type CartMutation<T extends Mutation> = { [K in T]: Cart }
