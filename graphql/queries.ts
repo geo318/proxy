@@ -1,5 +1,11 @@
 import { gql } from '@apollo/client'
 
+export const GET_CART_HASH = gql`
+  query GetCartHash {
+    getCartHash
+  }
+`
+
 export const GET_CART = gql`
   query GetCart {
     getCart {
