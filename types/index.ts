@@ -35,3 +35,16 @@ export interface CartItemMessage {
 }
 
 export type CartMutation<T extends Mutation> = { [K in T]: Cart }
+
+export type RegisterResponse = {
+  data: {
+    register: {
+      _id: string
+      token: string
+      cartId: string
+      isActive: boolean
+      createdAt: string
+      updatedAt: string
+    }
+  }
+}
