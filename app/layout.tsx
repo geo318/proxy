@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { GlobalContextProvider } from '@/context/global.context'
 import { GraphQLProvider } from '@/graphql'
-import Link from 'next/link'
+import Nav from '@/components/nav'
 import './globals.css'
 
 const geistSans = Geist({
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description: 'A simple e-commerce app with a GraphQL API',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
@@ -30,10 +30,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased p-4`}
       >
-        <header style={{ padding: '1rem', borderBottom: '1px solid #ccc' }}>
-          <nav>
-            <Link href='/'>Home</Link> | <Link href='/cart'>Cart</Link>
-          </nav>
+        <header className='mb-4 flex'>
+          <Nav />
         </header>
         <GraphQLProvider>
           <GlobalContextProvider>{children}</GlobalContextProvider>
