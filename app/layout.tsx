@@ -30,11 +30,13 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased p-4`}
       >
-        <header className='mb-4 flex'>
-          <Nav />
-        </header>
         <GraphQLProvider>
-          <GlobalContextProvider>{children}</GlobalContextProvider>
+          <GlobalContextProvider>
+            <header className='mb-4 flex'>
+              <Nav />
+            </header>
+            {children}
+          </GlobalContextProvider>
         </GraphQLProvider>
       </body>
     </html>
