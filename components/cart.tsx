@@ -15,7 +15,9 @@ const Cart = ({ cart, isLoading }: CartProps) => {
     <ul className='flex flex-col gap-5 min-w-80'>
       {skeleton ??
         emptyState ??
-        cart?.items.map((item) => <CartItem key={item._id} item={item} />)}
+        cart?.items
+          .toReversed()
+          .map((item) => <CartItem key={item._id} item={item} />)}
     </ul>
   )
 }
