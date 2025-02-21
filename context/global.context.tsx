@@ -17,6 +17,7 @@ interface GlobalContextType {
   removeItemFromCart: (cartItemId: string) => Promise<void>
   updateItemQuantity: (cartItemId: string, quantity: number) => Promise<void>
   refetchCart: () => Promise<{ data: { getCart: Cart } }>
+  isCartLoading: boolean
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined)
@@ -26,7 +27,9 @@ export const GlobalContextProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [cart, setCart] = useState<Cart | null>(null)
 
-  const { refetch: refetchCart } = useQuery<{ getCart: Cart }>(GET_CART, {
+  const { refetch: refetchCart, loading: isCartLoading } = useQuery<{
+    getCart: Cart
+  }>(GET_CART, {
     onCompleted: (data) => {
       setCart(data.getCart)
     },
@@ -148,6 +151,7 @@ export const GlobalContextProvider: React.FC<{ children: React.ReactNode }> = ({
         removeItemFromCart,
         updateItemQuantity,
         refetchCart,
+        isCartLoading,
       }}
     >
       {children}
