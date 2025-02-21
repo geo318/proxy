@@ -9,6 +9,12 @@ import {
 } from '@/graphql/mutations'
 import { Cart, CartMutation } from '@/types'
 import { GET_CART } from '@/graphql/queries'
+import {
+  cartAddItemSchema,
+  cartRemoveItemSchema,
+  cartUpdateItemQuantitySchema,
+} from '@/schema'
+import { logZodError } from '@/lib/utils'
 
 interface GlobalContextType {
   cart: Cart | null
@@ -39,6 +45,14 @@ export const GlobalContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [addItemMutation] = useMutation<CartMutation<'addItem'>>(ADD_ITEM)
 
   async function addItemToCart(productId: string, quantity: number) {
+    const { error, data } = cartAddItemSchema.safeParse({ productId, quantity })
+    if (error) {
+      logZodError(error)
+      return
+    }
+    productId = data.productId
+    quantity = data.quantity
+
     const id = `temp-${Date.now()}`
     await addItemMutation({
       variables: { input: { productId, quantity } },
@@ -94,6 +108,13 @@ export const GlobalContextProvider: React.FC<{ children: React.ReactNode }> = ({
   async function removeItemFromCart(cartItemId: string) {
     if (!cart) return
 
+    const { error, data } = cartRemoveItemSchema.safeParse({ cartItemId })
+    if (error) {
+      logZodError(error)
+      return
+    }
+    cartItemId = data?.cartItemId
+
     const optimisticCart = structuredClone(cart)
     optimisticCart.items = optimisticCart.items.filter(
       (item) => item._id !== cartItemId
@@ -119,6 +140,17 @@ export const GlobalContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
   async function updateItemQuantity(cartItemId: string, quantity: number) {
     if (!cart) return
+
+    const { error, data } = cartUpdateItemQuantitySchema.safeParse({
+      cartItemId,
+      quantity,
+    })
+    if (error) {
+      logZodError(error)
+      return
+    }
+    cartItemId = data.cartItemId
+    quantity = data.quantity
 
     const optimisticCart = structuredClone(cart)
     optimisticCart.items = optimisticCart.items.map((item) =>
