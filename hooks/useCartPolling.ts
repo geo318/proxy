@@ -13,18 +13,31 @@ export function useCartPolling() {
   >(null)
   const cartHashRef = useRef<string | null>(null)
 
-  // 1. Poll only the cart hash every 10 seconds
-  const { data: hashData, stopPolling, startPolling } = useQuery<{
+  const {
+    data: hashData,
+    stopPolling,
+    startPolling,
+  } = useQuery<{
     getCart: { hash: string }
-  }>(GET_CART_HASH, {
-    pollInterval: 10_000,
-  })
+  }>(GET_CART_HASH)
+
+  useEffect(() => {
+    startPolling(10_000)
+    return () => {
+      stopPolling()
+    }
+  }, [])
 
   const refetchFullCart = useCallback(async () => {
+    if (!cart) {
+      return
+    }
     const { data } = await refetchCart()
 
     const newCart = data?.getCart
-    if (!newCart || !cart) return
+    if (!newCart) {
+      return
+    }
 
     const changes: CartItemMessage[] = []
     newCart.items.forEach((newItem) => {
@@ -45,22 +58,14 @@ export function useCartPolling() {
   }, [cart, refetchCart, setCart, setPendingChanges])
 
   useEffect(() => {
-    if (!hashData?.getCart?.hash || !cart) return
+    const newHash = hashData?.getCart?.hash
+    if (!newHash) return
 
-    const newHash = hashData.getCart.hash
     if (cartHashRef.current !== newHash) {
       refetchFullCart()
+      cartHashRef.current = newHash
     }
-    cartHashRef.current = cart.hash
-  }, [hashData, cart, refetchFullCart])
-
-
-  useEffect(() => {
-    startPolling(10_000)
-    return () => {
-      stopPolling()
-    }
-  }, [])
+  }, [hashData, refetchFullCart])
 
   function acknowledgeChanges() {
     setPendingChanges(null)
